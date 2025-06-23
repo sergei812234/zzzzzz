@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GameCoins Market</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #0f172a, #1e293b);
+      color: white;
+      font-family: sans-serif;
+    }
+    input, select {
+      color: black;
+    }
+  </style>
+</head>
+<body class="p-4">
+  <div class="max-w-3xl mx-auto space-y-6">
+    <h1 class="text-3xl font-bold text-center">🎮 GameCoins Market</h1>
+
+    <!-- Каталог -->
+    <div class="space-y-4">
+      <h2 class="text-2xl font-semibold">Каталог товаров</h2>
+      <div id="catalog" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- Товары будут добавлены динамически -->
+      </div>
+    </div>
+
+    <!-- Корзина -->
+    <div class="mt-6">
+      <h2 class="text-xl font-semibold">🛒 Корзина</h2>
+      <ul id="cart" class="space-y-2"></ul>
+      <p id="total" class="mt-2 font-bold">Итого: 0₽</p>
+    </div>
+
+    <!-- Оформление заказа -->
+    <div class="mt-6 space-y-4">
+      <h2 class="text-xl font-semibold">Оформление заказа</h2>
+      <form id="orderForm" class="space-y-3">
+        <input required type="text" placeholder="Ваше имя или username" class="w-full p-2 rounded" id="name" pattern=".{3,}" />
+        <input required type="tel" placeholder="Номер телефона" class="w-full p-2 rounded" id="phone" pattern="^(\+7|8)\d{10}$" />
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded font-semibold">Продолжить</button>
+      </form>
+    </div>
+
+    <!-- Блок оплаты -->
+    <div id="paymentBlock" class="hidden space-y-3 bg-gray-800 p-4 rounded">
+      <p class="text-lg font-semibold">💳 Оплатите заказ</p>
+      <p>Переведите сумму на карту:</p>
+      <div class="text-2xl font-bold">2202 2002 2020 2020</div>
+      <p class="text-sm">После оплаты отправьте скриншот в бота.</p>
+    </div>
+
+    <!-- Инструкция -->
+    <div id="afterPayment" class="hidden space-y-3 bg-gray-700 p-4 rounded">
+      <p>📤 Отправьте скриншот перевода в бота.</p>
+      <p>🕐 После подтверждения бот напишет:</p>
+      <ul class="list-disc list-inside">
+        <li>⏳ Ожидайте 5–10 минут</li>
+        <li>📦 Скоро заказ будет у вас</li>
+      </ul>
+      <p id="timerMsg" class="font-semibold text-yellow-400"></p>
+    </div>
+  </div>
+
+  <script>
+    const catalogItems = [
+      { id: 1, name: "100 UC (PUBG)", price: 99 },
+      { id: 2, name: "500 Diamonds (Free Fire)", price: 299 },
+      { id: 3, name: "V-Bucks 1000 (Fortnite)", price: 449 },
+      { id: 4, name: "1000 Gold (Clash of Clans)", price: 199 },
+      { id: 5, name: "Robux 800", price: 250 },
+      { id: 6, name: "Gems (Brawl Stars)", price: 150 },
+    ];
+
+    const cart = [];
+    const catalog = document.getElementById("catalog");
+    const cartList = document.getElementById("cart");
+    const totalDisplay = document.getElementById("total");
+
+    function updateCart() {
+      cartList.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} — ${item.price}₽`;
+        cartList.appendChild(li);
+        total += item.price;
+      });
+      totalDisplay.textContent = `Итого: ${total}₽`;
+    }
+
+    catalogItems.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "bg-gray-700 p-4 rounded text-center hover:bg-gray-600 cursor-pointer";
+      div.innerHTML = `<h3 class="font-bold">${item.name}</h3><p>${item.price}₽</p>`;
+      div.onclick = () => {
+        cart.push(item);
+        updateCart();
+      };
+      catalog.appendChild(div);
+    });
+
+    document.getElementById("orderForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+
+      const phoneRegex = /^(\+7|8)\d{10}$/;
+      if (!phoneRegex.test(phone)) {
+        alert("Введите корректный номер телефона (например: +79991234567)");
+        return;
+      }
+
+      if (name.length < 3) {
+        alert("Введите настоящее имя или username");
+        return;
+      }
+
+      if (cart.length === 0) {
+        alert("Корзина пуста");
+        return;
+      }
+
+      // Показываем блок оплаты
+      document.getElementById("paymentBlock").classList.remove("hidden");
+      document.getElementById("afterPayment").classList.remove("hidden");
+
+      // Таймер уведомлений
+      setTimeout(() => {
+        document.getElementById("timerMsg").textContent = "⚠️ Скоро заказ будет у вас!";
+      }, 300000); // 5 минут
+    });
+  </script>
+</body>
+</html>
+
+
+
